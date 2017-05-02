@@ -10,6 +10,7 @@ router.get('/:channel_name', function(req, res, next) {
   	slack.api('groups.list', function(err, response) {
   		for(var c=0; c< response.groups.length; c++) {
   			var channel = response.groups[c];
+			console.log(c);
 
   			if(channel.id == req.params.channel_name) {
   				var feed = new rss({
