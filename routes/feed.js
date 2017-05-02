@@ -7,9 +7,9 @@ router.get('/:channel_name', function(req, res, next) {
  	apiToken = process.env.SLACK_API_KEY;
   	slack = new Slack(apiToken);
 
-  	slack.api('channels.list', function(err, response) {
-  		for(var c=0; c< response.channels.length; c++) {
-  			var channel = response.channels[c];
+  	slack.api('groups.list', function(err, response) {
+  		for(var c=0; c< response.groups.length; c++) {
+  			var channel = response.groups[c];
 
   			if(channel.name == req.params.channel_name) {
   				var feed = new rss({
@@ -19,9 +19,9 @@ router.get('/:channel_name', function(req, res, next) {
   					ttl: '30',
   				});
 
-  				slack.api('channels.history', {'channel':channel.id,'count':process.env.HISTORY_LENGTH} ,function(err, response){
+  				slack.api('groups.history', {'channel':channel.id,'count':process.env.HISTORY_LENGTH} ,function(err, response){
 			  		for(var i = 0; i < response.messages.length; i++) {
-			  			if(response.messages[i].attachments && response.messages[i].subtype != "bot_message") {  				
+			  			if(response.messages[i].attachments ) {  				
 				  			for(var j = 0; j < response.messages[i].attachments.length; j++) {
 				  				if(response.messages[i].attachments[j].title) {
 				  					var link = response.messages[i].attachments[j];
@@ -32,7 +32,15 @@ router.get('/:channel_name', function(req, res, next) {
 				  						title: link.title,
 				  						description: link.text,
 				  						url: link.title_link,
-				  						date: t
+				  						date: t,
+										custom_elements: [{
+                    									'media:thumbnail': {
+                      										_attr: {
+                        										'xmlns:media': "http://search.yahoo.com/mrss/",
+                       											url: link.image_url
+                      										}
+                    									}
+										}]
 				  					});
 				  				}
 				  			}
