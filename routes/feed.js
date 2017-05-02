@@ -11,10 +11,10 @@ router.get('/:channel_name', function(req, res, next) {
   		for(var c=0; c< response.groups.length; c++) {
   			var channel = response.groups[c];
 
-  			if(channel.ID == req.params.channel_name) {
+  			if(channel.id == req.params.channel_name) {
   				var feed = new rss({
-  					title:"#" + channel.name,
-  					description:"The links that have been posted to the #"+channel.name +" on Slack",
+  					title:"#" + channel.id,
+  					description:"The links that have been posted to the #"+channel.id +" on Slack",
   					site_url: 'https://github.com/gozman/slack-rss',
   					ttl: '30',
   				});
