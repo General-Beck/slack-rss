@@ -10,19 +10,18 @@ router.get('/:channel_name', function(req, res, next) {
   	slack.api('groups.list', function(err, response) {
   		for(var c=0; c< response.groups.length; c++) {
   			var channel = response.groups[c];
-			console.log(c);
 
-  			if(channel.id == req.params.channel_name) {
+  			if(channel.name == req.params.channel_name) {
   				var feed = new rss({
-  					title:"#" + channel.id,
-  					description:"The links that have been posted to the #"+channel.id +" on Slack",
+  					title:"#" + channel.name,
+  					description:"The links that have been posted to the #"+channel.name +" on Slack",
   					site_url: 'https://github.com/gozman/slack-rss',
   					ttl: '30',
   				});
 
   				slack.api('groups.history', {'channel':channel.id,'count':process.env.HISTORY_LENGTH} ,function(err, response){
 			  		for(var i = 0; i < response.messages.length; i++) {
-			  			if(response.messages[i].attachments ) {  				
+			  			if(response.messages[i].attachments) {  				
 				  			for(var j = 0; j < response.messages[i].attachments.length; j++) {
 				  				if(response.messages[i].attachments[j].title) {
 				  					var link = response.messages[i].attachments[j];
@@ -33,15 +32,7 @@ router.get('/:channel_name', function(req, res, next) {
 				  						title: link.title,
 				  						description: link.text,
 				  						url: link.title_link,
-				  						date: t,
-										custom_elements: [{
-                    									'media:thumbnail': {
-                      										_attr: {
-                        										'xmlns:media': "http://search.yahoo.com/mrss/",
-                       											url: link.image_url
-                      										}
-                    									}
-										}]
+				  						date: t
 				  					});
 				  				}
 				  			}
